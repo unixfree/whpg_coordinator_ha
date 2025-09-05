@@ -1,0 +1,41 @@
+#!/bin/bash
+#/etc/keepalived/check_my_service.sh
+
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+HOSTNAME=$(hostname)
+
+# Set DB connection information
+# If necessary, specify environment variables or directly (e.g., -h host, -p port, -U user)
+DB_HOST="whpg-m"    # Master host (or IP address)
+DB_PORT="5432"      # Port
+DB_USER="gpadmin"   # User to connect (privileged user)
+
+#logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived starting check WHPG Status" 
+
+# Run the pg_isready command
+# -h: host, -p: port, -U: user, -q: quiet mode (only output results, no additional messages), # -t 1: timeout of 1 second
+#RETURN=`/usr/local/greenplum-db/bin/pg_isready -h "$DB_HOST" -d postgres -p "$DB_PORT" -U "$DB_USER" -t 1`
+RETURN=`sudo -u gpadmin -i /usr/local/greenplum-db/bin/pg_isready -h whpg-m -d postgres -p 5432 -U gpadmin -t 1`
+RETURN_CODE=$?
+#logger "DEBUG: $RETURN $RETURN_CODE"
+ROLE=$(echo "$RETURN" | awk '{print $NF}')
+
+# Check the exit code of pg_isready
+# 0  : Master is in good condition whpg-m:5432 - accepting connections
+# 64 : Master is in good condition whpg-sm:5432 - mirror ready
+# 1 : Server is refusing connections (starting, pg_hba.conf issue, etc.)
+# 2 : No response (server down or network issue)
+# 3 : Invalid argument (error)       mis-hostname:5432 - no attempt
+
+if [[ $ROLE = "connections" && $RETURN_CODE -eq 0 ]]; then
+  #logger "$TIMESTAMP DEBUG1: Keepalived $RETURN $RETURN_CODE"
+  exit 0    
+elif [[ $ROLE = "ready" && $RETURN_CODE -eq 64 ]]; then
+  #logger "$TIMESTAMP DEBUG2: Keepalived $RETURN $RETURN_CODE" 
+  exit 1   
+else
+  #logger "$TIMESTAMP DEBUG3: Keepalived $RETURN $RETURN_CODE"
+  exit 1
+fi
+
+#logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived completed checking WHPG Status" 

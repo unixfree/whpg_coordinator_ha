@@ -1,0 +1,65 @@
+! Configuration File for keepalived
+
+global_defs {
+    router_id whpg-s               # Unique ID for each server (recommended to be set to host name, etc.)
+    script_user gpadmin            # Run the script as this user.
+    # notification_email {
+    #   admin@example.com
+    # }
+    # notification_email_from keepalived@example.com
+    # smtp_server 127.0.0.1
+    # smtp_connect_timeout 30
+    enable_script_security         # Enhance script execution security (recommended)
+    # vrrp_skip_check_adv_addr
+    # vrrp_strict
+    # vrrp_garp_interval 0
+    # vrrp_gna_interval 0
+}
+
+vrrp_script chk_service_health {
+script "/etc/keepalived/check_my_service.sh"       # Service status check script
+interval 1                                         # Runs every second
+weight 50           # If the script fails, the priority decreases by 30. If the standby is normal, the priority increases by 30.
+fall 3              # If it fails three times, it switches to FAULT status.
+rise 1              # If it succeeds once, it switches back to NORMAL status.
+}
+
+vrrp_instance VI_1 {
+    state BACKUP            # This node's initial state: BACKUP or MASTER
+    interface eth1          # Network interface to send and receive VRRP packets (replace with the actual interface name)
+    virtual_router_id 51    # VRRP router ID (must be unique within this cluster, 1-255)
+    priority 98             # This node's priority (set the Master Node higher than 2)
+    # max_auto_priority 120 # If the priority of the BACKUP server with the VIP after failover is greater than max_auto_priority, the MASTER will not retrieve the VIP and will wait.
+
+    #nopreempt              # High priority does not cause failover. If VRRP packets arrive normally, the state will remain.
+    preempt                 # The node with the highest priority becomes the Master.
+
+    advert_int 1            # VRRP advertisement interval (in seconds). 
+                            # If no advertisement packets are received for three times the actual value, a failure is detected. 
+                            # This means the node will wait for 3 seconds. 
+    authentication {
+       auth_type PASS       # Authentication method (PASS or AH)
+       auth_pass secretpw   # Authentication password (set the same on both nodes)
+    }
+
+    # -- Core parts of Unicast setup --
+    unicast_src_ip 192.168.10.12      # Your IP address
+    unicast_peer {
+        192.168.10.11                # IP address of the other party (Master) server
+    }
+
+    virtual_ipaddress {
+        #192.168.56.100/24 dev eth1 label eth1:0    # Virtual IP address (VIP) that clients will access
+        192.168.56.100/24                           # Virtual IP address (VIP) that clients will access
+    }
+
+    track_script {
+        chk_service_health
+    }
+
+    notify_master "/etc/keepalived/notify_master.sh MASTER"
+    notify_backup "/etc/keepalived/notify_state_change.sh BACKUP"
+    #notify_fault "/etc/keepalived/notify_state_change.sh FAULT"
+    notify_stop "/etc/keepalived/notify_state_change.sh STOP"
+    #notify_stop "/etc/keepalived/notify_stop.sh BACKUP"
+}

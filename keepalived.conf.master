@@ -1,0 +1,65 @@
+! Configuration File for keepalived
+
+global_defs {
+    router_id whpg-m        # A unique ID for each server (recommended to use the hostname, etc.)
+    script_user gpadmin     # Run the script as this user.
+    # notification_email {
+    #   admin@example.com
+    # }
+    # notification_email_from keepalived@example.com
+    # smtp_server 127.0.0.1
+    # smtp_connect_timeout 30
+    enable_script_security   # Enhance script execution security (recommended)
+    # vrrp_skip_check_adv_addr
+    # vrrp_strict
+    # vrrp_garp_interval 0
+    # vrrp_gna_interval 0
+}
+
+vrrp_script chk_service_health {
+    script "/etc/keepalived/check_my_service.sh"    # Service status check script
+
+    interval 1             # Runs every second
+    weight 50              # Decrease priority by 50 if the script fails, and increase by 50 if the master is healthy
+    fall 3                 # Transition to FAULT status after 3 failures
+    rise 1                 # Transition back to normal status after 1 success
+}
+
+vrrp_instance VI_1 {
+    state MASTER          # This node's initial state: BACKUP or MASTER
+    interface eth1        # The network interface that will receive and send VRRP packets (replace this with the actual interface name)
+    virtual_router_id 51  # The VRRP router ID (must be the same as Node 1)
+    priority 100          # This node's priority (set the Master Node to a higher value than 2)
+
+    #nopreempt               # Services (WHPG, VIP) do not failover just because the priority is high.
+    preempt                  # High priority node is the Master
+
+    advert_int 1             # VRRP advertisement interval (in seconds), 
+                             # if the thread does not receive an advertisement packet for 3 times this value,
+                             # it is considered a failure, i.e. it waits for 3 seconds.
+    authentication {
+        auth_type PASS         # Authentication method (PASS or AH)
+        auth_pass secretpw     # Same password as Node 1
+    }
+
+    # -- Core parts of Unicast setup --
+    unicast_src_ip 192.168.10.11     # Your IP address
+    unicast_peer {
+        192.168.10.12                # IP address of the other party (Backup) server
+    }
+
+    virtual_ipaddress {
+        #192.168.56.100/24 dev eth1 label eth1:0  # Virtual IP address (VIP) that clients will access - same as Node 1
+        192.168.56.100/24                         # Virtual IP address (VIP) that clients will access - same as Node 1
+    }
+
+    track_script {
+        chk_service_health
+    }
+
+    notify_master "/etc/keepalived/notify_master.sh MASTER"
+    notify_backup "/etc/keepalived/notify_state_change.sh BACKUP"
+    #notify_fault "/etc/keepalived/notify_state_change.sh FAULT"
+    notify_stop "/etc/keepalived/notify_state_change.sh STOP"
+    #notify_stop "/etc/keepalived/notify_stop.sh BACKUP"
+}
