@@ -1,6 +1,6 @@
 ## This repo is for HA for WarehousePG Coordinator node.
 
-### VRRP fail detect algorithm 
+### VRRP detection algorithm 
 VRRP (Virtual Router Redundancy Protocol) is a protocol that provides redundancy for devices like routers and servers to ensure high availability in a network. It operates multiple devices as a single virtual device, so that if the primary device fails, the backup device immediately takes over, preventing service interruptions. <br>
 VRRP(Virtual Router Redundancy Protocol)는 네트워크의 **고가용성(High Availability)**을 위해 라우터나 서버 같은 장비를 이중화하는 프로토콜입니다. 여러 대의 장비를 하나의 가상 장비처럼 동작시켜, 주(Master) 장비에 장애가 발생해도 예비(Backup) 장비가 즉시 그 역할을 이어받아 서비스 중단을 방지합니다.
 
