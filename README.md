@@ -6,7 +6,7 @@ VRRP(Virtual Router Redundancy Protocol)는 네트워크의 **고가용성(High 
 
 |Category 구분 | Failure Type 장애 유형 | Detection Method 감지 방식 | Failover Time 페일오버시간 |
 -----|---------|---------|--------------|
-|Timeout-based Method	| Network Failure (Packet Loss)타임아웃 방식	| 네트워크 장애 (패킷 유실)  | Detected by BACKUP via timeout 원격 노드(BACKUP)에서 타임아웃으로 감지| Approx. 3 seconds (Master_Down_Interval) 약 3초 |
+|Timeout-based Method	타임아웃 방식 | Network Failure (Packet Loss)네트워크 장애 (패킷 유실) | Detected by BACKUP via timeout 원격 노드(BACKUP)에서 타임아웃으로 감지| Approx. 3 seconds (Master_Down_Interval) 약 3초 |
 |Event-based Method 이벤트 방식 | Server/Interface Failure 서버 다운, 인터페이스 장애| Direct event detection on MASTER 로컬 노드(MASTER)에서 이벤트로 직접 감지 | Immediate (Near-zero seconds) 즉시 (거의 0초)|
 
 ![Scenario Stage 1/2](img/Stage1_2.png)
