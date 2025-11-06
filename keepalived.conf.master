@@ -59,7 +59,7 @@ vrrp_instance VI_1 {
 
     notify_master "/etc/keepalived/notify_master.sh MASTER"
     notify_backup "/etc/keepalived/notify_state_change.sh BACKUP"
-    #notify_fault "/etc/keepalived/notify_state_change.sh FAULT"
+    notify_fault "/etc/keepalived/notify_state_change.sh FAULT"
     notify_stop "/etc/keepalived/notify_state_change.sh STOP"
     #notify_stop "/etc/keepalived/notify_stop.sh BACKUP"
 }
