@@ -26,6 +26,8 @@ case "$CURRENT_STATE" in
         logger "Keepalived: BACKUP on $HOSTNAME DEBUG EDB"
         #echo "Keepalived: BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
         # (Optional) Add BACKUP specific actions here
+        rm /tmp/.s.PGSQL.5432
+	    rm /tmp/.s.PGSQL.5432.lock
         ;;
     "FAULT")
         logger "Keepalived: FAULT on $HOSTNAME DEBUG EDB"
