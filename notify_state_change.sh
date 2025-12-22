@@ -32,7 +32,7 @@ case "$CURRENT_STATE" in
     "FAULT")
         logger "Keepalived: FAULT on $HOSTNAME DEBUG EDB"
         #echo "Keepalived: FAULT on $HOSTNAME" | mail -s "HA Event" admin@example.com
-        # FAULT 상태일 때 Greenplum DB 중지 (sudoers 설정 필수)
+        # when state is FAULT,  shotdow Greenplum DB (needed to setup sudoers)
         sudo -u gpadmin -i /usr/local/greenplum-db/bin/pg_ctl stop -D /data/coordinator/gpseg-1
         ;;
     "STOP")
