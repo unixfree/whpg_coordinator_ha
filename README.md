@@ -78,6 +78,8 @@ ip a
 ip a show [InterfaceName]
 
 while true; do /usr/local/greenplum-db/bin/pg_isready -h <VIP> -d postgres -p 5432 -U gpadmin -t 1; date; echo ---------------------; sleep 1; done
+
+while true; do psql -d postgres -h <VIP> -c "select count(*) from canary_queries;";date; echo ==========================; sleep 1; done
  ```
 ### Check VRRP Packet
  ```
@@ -94,7 +96,10 @@ sudo tcpdump -i eth1 -n "proto 112"
 sudo tcpdump -i eth1 ah
 sudo tcpdump -i eth1 -n "proto 51"
  ```
-
+### Check log messages
+```
+sudo grep Keepalived /var/log/messages
+```
 ### WARNING
 If you want to perform VIP and DB failover only in case of server or network failure. <br>
 change keepalived.conf at BACKUP(standby master) node.<br>
