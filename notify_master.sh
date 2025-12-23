@@ -11,7 +11,7 @@ if [ "$CURRENT_STATE" == "MASTER" ]; then
     logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived This node is now MASTER. Starting WHPG..."
     # Example: Web service start command
     # sudo /usr/bin/systemctl start my_service.service
-    export COORDINATOR_DATA_DIRECTORY=/data/master/gpseg-1
+    export COORDINATOR_DATA_DIRECTORY=/data/coordinator/gpseg-1
     sudo -u gpadmin -i gpactivatestandby -f -d $COORDINATOR_DATA_DIRECTORY -q -a
 
     SERVICE_START_STATUS=$?
