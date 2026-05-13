@@ -17,7 +17,7 @@ if [ "$CURRENT_STATE" == "MASTER" ]; then
     SERVICE_START_STATUS=$?
 
     if [ $SERVICE_START_STATUS -eq 0 ]; then
-        logger "$TIMESTAMP SUCCESS: [$HOSTNAME] Keepalived WHPG started successfully."
+        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived WHPG started successfully."
     else
         logger "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived Failed to start WHPG (Exit Code: $SERVICE_START_STATUS)."
         # Additional actions to take if service start fails (e.g. emergency notification)
