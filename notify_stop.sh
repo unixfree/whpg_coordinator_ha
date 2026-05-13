@@ -23,9 +23,9 @@ exit 0
 
 # (Options) add Alert
 # if [ "$CURRENT_STATE" == "MASTER" ]; then
-#   echo "Keepalived: MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
+#   echo "$TIMESTAMP INFO: Keepalived: MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
 # elif [ "$CURRENT_STATE" == "BACKUP" ]; then
-#   echo "Keepalived: BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
+#   echo "$TIMESTAMP INFO: Keepalived: BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
 # fi
 
 exit 0
