@@ -3,7 +3,7 @@
 
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 HOSTNAME=$(hostname)
-CURRENT_STATE="$1" # MASTER, BACKUP, FAULT
+CURRENT_STATE="$1" # MASTER, BACKUP, FAULT, STOP
 
 logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived delete VIP $CURRENT_STATE by notify_stop.sh"
 
@@ -18,8 +18,6 @@ sudo ip addr del ${VIP}/24 dev ${IFACE}
 
 # clear ARP Cache (notify new VIP)
 arping -c 3 -I ${IFACE} ${VIP}
-
-exit 0
 
 # (Options) add Alert
 # if [ "$CURRENT_STATE" == "MASTER" ]; then
