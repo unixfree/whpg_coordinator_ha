@@ -10,38 +10,38 @@ logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived state changed to $CURRENT_STATE 
 
 # (Optional) Add notification
 # if [ "$CURRENT_STATE" == "MASTER" ]; then
-#   echo "Keepalived: MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
+#   echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
 # elif [ "$CURRENT_STATE" == "BACKUP" ]; then
-#   echo "Keepalived: BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
+#   echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
 # fi
 
 # (Optional) Add notification
 case "$CURRENT_STATE" in
     "MASTER")
-        logger "Keepalived: MASTER on $HOSTNAME DEBUG EDB"
-        #echo "Keepalived: MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
+        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived MASTER on $HOSTNAME DEBUG EDB"
+        #echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
         # (Optional) Add MASTER specific actions here
         ;;
     "BACKUP")
-        logger "Keepalived: BACKUP on $HOSTNAME DEBUG EDB"
-        #echo "Keepalived: BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
+        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME DEBUG EDB"
+        #echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
         # (Optional) Add BACKUP specific actions here
         rm /tmp/.s.PGSQL.5432
 	    rm /tmp/.s.PGSQL.5432.lock
         ;;
     "FAULT")
-        logger "Keepalived: FAULT on $HOSTNAME DEBUG EDB"
-        #echo "Keepalived: FAULT on $HOSTNAME" | mail -s "HA Event" admin@example.com
+        logger "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived FAULT on $HOSTNAME DEBUG EDB"
+        #echo "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived FAULT on $HOSTNAME" | mail -s "HA Event" admin@example.com
         # when state is FAULT,  shotdow Greenplum DB (needed to setup sudoers)
         sudo -u gpadmin -i /usr/local/greenplum-db/bin/pg_ctl stop -D /data/coordinator/gpseg-1
         ;;
     "STOP")
-        logger "Keepalived: STOPPED on $HOSTNAME DEBUG EDB"
+        logger "$TIMESTAMP INFO: Keepalived STOPPED on $HOSTNAME DEBUG EDB"
         # (Optional) Add STOP specific actions here
         ;;
     *)
         # MASTER, BACKUP, FAULT, STOP 외의 알 수 없는 상태
-        logger "Keepalived: Unknown state $CURRENT_STATE on $HOSTNAME"
+        logger "$TIMESTAMP ERROR: Keepalived Unknown state $CURRENT_STATE on $HOSTNAME"
         ;;
 esac
 
