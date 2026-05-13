@@ -3,7 +3,7 @@
 
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 HOSTNAME=$(hostname)
-CURRENT_STATE="$1"    # Third argument passed to notify script (MASTER, BACKUP, FAULT)
+CURRENT_STATE="$1"    # Third argument passed to notify script (MASTER, BACKUP, FAULT, STOP)
 
 logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived State changed to $CURRENT_STATE by notify_master.sh"
 
