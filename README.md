@@ -13,7 +13,7 @@ VRRP(Virtual Router Redundancy Protocol)는 네트워크의 **고가용성(High 
 ![Scenario Stage 3/4](img/Stage3_4.png)
 ![Scenario Stage 5](img/Stage5.png)
 
-### setup keepalived at master and standby Master
+### setup keepalived at Coordinator and standby Coordinator
  ```
 sudo dnf install -y keepalived 
 
