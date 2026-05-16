@@ -16,8 +16,10 @@ VRRP(Virtual Router Redundancy Protocol)는 네트워크의 **고가용성(High 
 ### setup keepalived at Coordinator and standby Coordinator
  ```
 sudo dnf install -y keepalived 
+ ```
 
-echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
+(Optional) Some service need to bing VIP. no need if service start 0.0.0.0 for listen 
+ ```
 echo "net.ipv4.ip_nonlocal_bind = 1" | sudo tee -a /etc/sysctl.conf # Allow VIP to not be bound locally
 sudo sysctl -p
  ```
