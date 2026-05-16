@@ -1,8 +1,8 @@
 ! Configuration File for keepalived
 
 global_defs {
-    router_id whpg-m        # A unique ID for each server (recommended to use the hostname, etc.)
-    script_user gpadmin     # Run the script as this user.
+    router_id cdw            # A unique ID for each server (recommended to use the hostname, etc.)
+    script_user gpadmin      # Run the script as this user.
     enable_script_security   # Enhance script execution security (recommended)
 }
 
