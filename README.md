@@ -35,18 +35,16 @@ sudo firewall-cmd --reload # Reload the firewall to apply the changes
 ### folder / files
  ```
 /etc/keepalived/keepalived.conf     # keepalived.conf.master for MASTER, keepalived.conf.backup for BACKUP
-/etc/keepalived/check_my_service.sh # check_my_service.sh.master for MASTER, check_my_service.sh.backup for BACKUP
-/etc/keepalived/notify_master.sh
+/etc/keepalived/check_whpg_service.sh # check_my_service.sh.master for MASTER, check_my_service.sh.backup for BACKUP
 /etc/keepalived/notify_state_change.sh
-/etc/keepalived/notify_stop.sh
  ```
 ### change scripts
 ```
-DB_HOST="whpg-m"     # hostname (or IP address)
+DB_HOST="cdw"        # hostname (or IP address)
 DB_PORT="5432"       # port
 DB_USER="gpadmin" 
-VIP 192.168.56.100
-COORDINATOR_DATA_DIRECTORY=/data/master/gpseg-1
+VIP="192.168.56.100"
+COORDINATOR_DATA_DIRECTORY="/data/coordinator/gpseg-1"
 and so on.
 ```
 ### Change Owner and Permission
@@ -142,7 +140,8 @@ check at BACKUP node
 ```
 When failed node start up normaly, make it standby node of WarehousePG by following
 1. At failed node
-   check $MASTER_DATA_DIRECTORY, and rm -rf $MASTER_DATA_DIRECTORY or mv $MASTER_DATA_DIRECTORY $MASTER_DATA_DIRECTORY.org
+   check $COORDINATOR_DATA_DIRECTORY,
+   and rm -rf $COORDINATOR_DATA_DIRECTORY or mv $COORDINATOR_DATA_DIRECTORY $COORDINATOR_DATA_DIRECTORY.org
 2. At Backup node( currently Master node of WarehousePG )
    $ gpinitstandby -s failed_node_ip
 ```
@@ -152,7 +151,7 @@ When failed node start up normaly, make it standby node of WarehousePG by follow
 when master and standby is running, do following command at current Master node.
 $ kill -9 postgres_pid
 or
-$ pg_ctl -D $MASTER_DATA_DIRECTORY stop
+$ pg_ctl -D $COORDINATOR_DATA_DIRECTORY stop
 
 then, ..
 The keepalived move VIP to original master node and run gpactivatestandby at original master node
