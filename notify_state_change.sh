@@ -5,6 +5,8 @@
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 HOSTNAME=$(hostname)
 CURRENT_STATE="$1" # MASTER, BACKUP, FAULT, STOP
+COORDINATOR_DATA_DIRECTORY=/data/coordinator/gpseg-1
+VIP="192.168.1.100"
 
 logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived state changed to $CURRENT_STATE by notify_state_change.sh"
 
@@ -18,21 +20,35 @@ logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived state changed to $CURRENT_STATE 
 # (Optional) Add notification
 case "$CURRENT_STATE" in
     "MASTER")
-        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived MASTER on $HOSTNAME DEBUG EDB"
-        #echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived MASTER on $HOSTNAME" | mail -s "HA Event" admin@example.com
-        # (Optional) Add MASTER specific actions here
+        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived This node is now MASTER. Starting WHPG..."
+        # Add MASTER specific actions here
+        sudo -u gpadmin -i gpactivatestandby -f -d $COORDINATOR_DATA_DIRECTORY -q -a
+        SERVICE_START_STATUS=$?
+
+        if [ $SERVICE_START_STATUS -eq 0 ]; then
+            logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived WHPG started successfully."
+        else
+            logger "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived Failed to start WHPG (Exit Code: $SERVICE_START_STATUS)."
+        fi
+
+        # Example: Verifying connection to a virtual IP
+        ping -c 1 $VIP > /dev/null
+        if [ $? -eq 0 ]; then
+            logger "$TIMESTAMP INFO: [$HOSTNAME] VIP $VIP is reachable."
+        else
+            echo "$TIMESTAMP ERROR: [$HOSTNAME] VIP $VIP is NOT reachable."
+        fi
         ;;
     "BACKUP")
-        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME DEBUG EDB"
-        #echo "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME" | mail -s "HA Event" admin@example.com
-        # (Optional) Add BACKUP specific actions here
+        logger "$TIMESTAMP INFO: [$HOSTNAME] Keepalived BACKUP on $HOSTNAME"
+        # Add BACKUP specific actions here, when stop by kill -9 Postmaster 
         rm /tmp/.s.PGSQL.5432
 	    rm /tmp/.s.PGSQL.5432.lock
         ;;
     "FAULT")
         logger "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived FAULT on $HOSTNAME DEBUG EDB"
-        #echo "$TIMESTAMP ERROR: [$HOSTNAME] Keepalived FAULT on $HOSTNAME" | mail -s "HA Event" admin@example.com
-        # when state is FAULT,  shotdow Greenplum DB (needed to setup sudoers)
+        # when state is FAULT,shutdown WarehousePG DB when down interface or unplug network cable
+		# for prevent brain split.
         sudo -u gpadmin -i /usr/local/greenplum-db/bin/pg_ctl stop -D /data/coordinator/gpseg-1
         ;;
     "STOP")
