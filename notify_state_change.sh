@@ -33,14 +33,21 @@ case "$CURRENT_STATE" in
     "BACKUP")
         logger "$TIMESTAMP INFO: Keepalived [$HOSTNAME] BACKUP state"
         # Add BACKUP specific actions here, when stop by kill -9 Postmaster 
-        rm /tmp/.s.PGSQL.5432
-	    rm /tmp/.s.PGSQL.5432.lock
+        # rm /tmp/.s.PGSQL.5432
+	    # rm /tmp/.s.PGSQL.5432.lock
         ;;
     "FAULT")
         logger "$TIMESTAMP ERROR: Keepalived [$HOSTNAME] FAULT state"
         # when state is FAULT,shutdown WarehousePG when down interface or unplug network cable
 		# for prevent brain split.
         sudo -u gpadmin -i /usr/local/greenplum-db/bin/pg_ctl stop -D $COORDINATOR_DATA_DIRECTORY
+		if [ $? -eq 0 ]; then
+		    logger "$TIMESTAMP INFO: Keepalived [$HOSTNAME] WHPG stopped"
+        else
+			rm /tmp/.s.PGSQL.5432
+	        rm /tmp/.s.PGSQL.5432.lock
+			logger "$TIMESTAMP INFO: Keepalived [$HOSTNAME] deleted /tmp/.s.PGSQL.532"
+        fi
         ;;
     "STOP")
         logger "$TIMESTAMP INFO: Keepalived [$HOSTNAME] STOP state"
